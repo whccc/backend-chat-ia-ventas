@@ -1,23 +1,15 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
 
-export class UserCreateDto {
-  @IsNotEmpty()
-  id: string = '';
-
+export class CreateUserHttpRequestDto {
   @IsNotEmpty()
   @IsString()
   name: string = '';
 
-  @IsNotEmpty()
-  isActive: boolean = false;
-
-  createdAt: Date = new Date();
+  @IsEmail()
+  email: string = '';
 
   @IsNotEmpty()
-  updatedAt: Date = new Date();
-}
-
-export class UserResponseDto {
-  id: string = '';
-  name: string = '';
+  @IsString()
+  @MinLength(6)
+  password: string = '';
 }

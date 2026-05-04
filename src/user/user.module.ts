@@ -1,12 +1,14 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserController } from './infrastructure/http/user.controller';
 import { USER_REPOSITORY_PORT } from './domain/ports/user-repository.port';
 import { USER_USE_CASES_PORT } from './application/ports/user-application.port';
 import { UserService } from './application/service/user.service';
 import { UserTypeOrmRepository } from './infrastructure/persistence/user.typeorm.repository';
+import { UserOrmEntity } from './infrastructure/persistence/entities/user.orm-entity';
 
 @Module({
-  imports: [],
+  imports: [TypeOrmModule.forFeature([UserOrmEntity])],
   controllers: [UserController],
   providers: [
     {
@@ -18,5 +20,6 @@ import { UserTypeOrmRepository } from './infrastructure/persistence/user.typeorm
       useClass: UserService,
     },
   ],
+  exports: [USER_USE_CASES_PORT],
 })
 export class UserModule {}
