@@ -1,3 +1,5 @@
+import { DomainValidationError } from 'src/shared/domain/errors/domain-validation.error';
+
 export class UserNames {
   private constructor(private readonly internalValue: string) {}
 
@@ -5,11 +7,11 @@ export class UserNames {
     const normalizedValue = value.trim().replace(/\s+/g, ' ');
 
     if (!normalizedValue) {
-      throw new Error('User name is required');
+      throw new DomainValidationError('User name is required');
     }
 
     if (normalizedValue.length > 255) {
-      throw new Error('User name is too long');
+      throw new DomainValidationError('User name is too long');
     }
 
     return new UserNames(normalizedValue);

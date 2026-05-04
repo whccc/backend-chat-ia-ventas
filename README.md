@@ -31,6 +31,19 @@
 $ npm install
 ```
 
+## Environment variables
+
+Create a `.env` file based on this example:
+
+```env
+DB_HOST=localhost
+DB_PORT=5432
+DB_USERNAME=postgres
+DB_PASSWORD=postgres
+DB_NAME=chat_ia_ventas
+DB_SYNCHRONIZE=false
+```
+
 ## Compile and run the project
 
 ```bash
@@ -43,6 +56,9 @@ $ npm run start:dev
 # production mode
 $ npm run start:prod
 ```
+
+The API uses PostgreSQL and exposes the user creation endpoint at `POST /api/v1/user`.
+For local development you can enable `DB_SYNCHRONIZE=true`, but keep it disabled by default as a safer project base.
 
 ## Run tests
 

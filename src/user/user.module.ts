@@ -6,6 +6,8 @@ import { USER_USE_CASES_PORT } from './application/ports/user-application.port';
 import { UserService } from './application/service/user.service';
 import { UserTypeOrmRepository } from './infrastructure/persistence/user.typeorm.repository';
 import { UserOrmEntity } from './infrastructure/persistence/entities/user.orm-entity';
+import { PASSWORD_HASHER_PORT } from './application/ports/password-hasher.port';
+import { CryptoPasswordHasher } from './infrastructure/security/crypto-password-hasher';
 
 @Module({
   imports: [TypeOrmModule.forFeature([UserOrmEntity])],
@@ -18,6 +20,10 @@ import { UserOrmEntity } from './infrastructure/persistence/entities/user.orm-en
     {
       provide: USER_USE_CASES_PORT,
       useClass: UserService,
+    },
+    {
+      provide: PASSWORD_HASHER_PORT,
+      useClass: CryptoPasswordHasher,
     },
   ],
   exports: [USER_USE_CASES_PORT],

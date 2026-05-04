@@ -1,5 +1,6 @@
 import { CreateUserProps, UserProps } from '../interfaces/user.interface';
 import { UserNames } from '../value-objects/user-names.value-object';
+import { DomainValidationError } from 'src/shared/domain/errors/domain-validation.error';
 
 export class User {
   private constructor(private props: UserProps) {}
@@ -10,8 +11,8 @@ export class User {
     return new User({
       id: crypto.randomUUID(),
       name: UserNames.create(props.name).value,
-      email: this.validateEmail(props.email),
-      password: this.validatePassword(props.password),
+      email: this.normalizeEmail(props.email),
+      password: this.validateStoredPassword(props.password),
       isActive: true,
       createdAt: now,
       updatedAt: now,
@@ -22,9 +23,33 @@ export class User {
     return new User({
       ...props,
       name: UserNames.create(props.name).value,
-      email: this.validateEmail(props.email),
-      password: this.validatePassword(props.password),
+      email: this.normalizeEmail(props.email),
+      password: this.validateStoredPassword(props.password),
     });
+  }
+
+  public static ensurePasswordPolicy(password: string): void {
+    if (password.trim().length < 6) {
+      throw new DomainValidationError(
+        'User password must have at least 6 characters',
+      );
+    }
+  }
+
+  public static normalizeEmail(email: string): string {
+    const normalizedEmail = email.trim().toLowerCase();
+
+    if (!normalizedEmail) {
+      throw new DomainValidationError('User email is required');
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(normalizedEmail)) {
+      throw new DomainValidationError('User email is invalid');
+    }
+
+    return normalizedEmail;
   }
 
   public get id(): string {
@@ -57,7 +82,7 @@ export class User {
 
   public activate(): void {
     if (this.props.isActive) {
-      throw new Error('User is already active');
+      throw new DomainValidationError('User is already active');
     }
 
     this.props.isActive = true;
@@ -66,7 +91,7 @@ export class User {
 
   public deactivate(): void {
     if (!this.props.isActive) {
-      throw new Error('User is already inactive');
+      throw new DomainValidationError('User is already inactive');
     }
 
     this.props.isActive = false;
@@ -79,7 +104,12 @@ export class User {
   }
 
   public changeEmail(email: string): void {
-    this.props.email = User.validateEmail(email);
+    this.props.email = User.normalizeEmail(email);
+    this.touch();
+  }
+
+  public changePassword(passwordHash: string): void {
+    this.props.password = User.validateStoredPassword(passwordHash);
     this.touch();
   }
 
@@ -95,25 +125,9 @@ export class User {
     this.props.updatedAt = new Date();
   }
 
-  private static validateEmail(email: string): string {
-    const normalizedEmail = email.trim().toLowerCase();
-
-    if (!normalizedEmail) {
-      throw new Error('User email is required');
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!emailRegex.test(normalizedEmail)) {
-      throw new Error('User email is invalid');
-    }
-
-    return normalizedEmail;
-  }
-
-  private static validatePassword(password: string): string {
-    if (password.trim().length < 6) {
-      throw new Error('User password must have at least 6 characters');
+  private static validateStoredPassword(password: string): string {
+    if (!password.trim()) {
+      throw new DomainValidationError('User password is required');
     }
 
     return password;
