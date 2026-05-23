@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserModule } from './user/user.module';
+import { ProductModule } from './product/product.module';
 
 @Module({
   imports: [
@@ -14,16 +14,15 @@ import { UserModule } from './user/user.module';
       useFactory: (configService: ConfigService) => ({
         type: 'postgres' as const,
         host: configService.get<string>('DB_HOST', 'localhost'),
-        port: parseInt(configService.get<string>('DB_PORT', '5432'), 10),
+        port: parseInt(configService.get<string>('DB_PORT', '5433'), 10),
         username: configService.get<string>('DB_USERNAME', 'postgres'),
-        password: configService.get<string>('DB_PASSWORD', 'postgres'),
-        database: configService.get<string>('DB_NAME', 'chat_ia_ventas'),
+        password: configService.get<string>('DB_PASSWORD', 'pass'),
+        database: configService.get<string>('DB_NAME', 'ollama-pdf'),
         autoLoadEntities: true,
-        synchronize:
-          configService.get<string>('DB_SYNCHRONIZE', 'false') === 'true',
+        synchronize: false,
       }),
     }),
-    UserModule,
+    ProductModule,
   ],
   controllers: [],
   providers: [],
