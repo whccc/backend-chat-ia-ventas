@@ -15,7 +15,6 @@ export class ProductCreateRequestDto {
 
   @IsNotEmpty()
   @IsNumber()
-  @Min(1)
   stock: number = 0;
 
   @IsNotEmpty()

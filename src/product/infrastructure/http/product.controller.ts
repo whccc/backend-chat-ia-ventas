@@ -19,6 +19,6 @@ export class ProductController {
     @Body() dto: ProductCreateRequestDto,
   ): Promise<IProductResponseDto> {
     const product = await this.productService.createProduct(dto);
-    return ProductHttpMapper.toHttpResponse(product);
+    return ProductHttpMapper.toResponseProduct(product);
   }
 }
